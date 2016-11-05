@@ -15,4 +15,9 @@ class User < ActiveRecord::Base
     BCrypt::Password.create(string, cost: cost)
   end
   # digestの計算は、ユーザ毎に行われるため、user.rbに配置。
+
+  def User.new_token
+    SecureRandom.urlsafe_base64
+  end
+
 end
