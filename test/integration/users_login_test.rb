@@ -18,7 +18,7 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
   end
 
 
-    test "login with valid information" do
+  test "login with valid information" do
     get login_path
     post login_path, session: { email: @user.email, password: 'password' }
     assert_redirected_to @user
@@ -29,7 +29,7 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", user_path(@user)
   end
 
-    test "login with valid information followed by logout" do
+  test "login with valid information followed by logout" do
     get login_path
     post login_path, session: { email: @user.email, password: 'password' }
     assert is_logged_in?
@@ -47,5 +47,4 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", logout_path,      count: 0
     assert_select "a[href=?]", user_path(@user), count: 0
   end
-
 end
