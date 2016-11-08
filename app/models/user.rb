@@ -42,6 +42,7 @@ class User < ActiveRecord::Base
 
   # 渡されたトークンがダイジェストと一致したらtrueを返す
   def authenticated?(remember_token)
+    return false if remember_digest.nil?
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
   end
      #このremembertokenはremember_tokenとは違って、ユーザ関数内の変数。
