@@ -1,10 +1,14 @@
 class User < ActiveRecord::Base
-  attr_accessor :remember_token
-  before_save { self.email = email.downcase }
-    #ActiveRecordのコールバックメソッド(ある特定の時点で呼び出されるメソッド)の一つ。
+  attr_accessor :remember_token, :activation_token
+  before_save :downcase_email
+  #ActiveRecordのコールバックメソッド(ある特定の時点で呼び出されるメソッド)の一つ。
   #このコールバックメソッドは、全ての作業の最初に呼び出されるもの。
   #今回のselfは、現在のユーザを表す。
   #[self.email = self.email.downcaseの省略]
+  
+  before_create :create_activation_digest
+
+  
   validates :name,  presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, length: { maximum: 255 },
@@ -40,17 +44,24 @@ class User < ActiveRecord::Base
     #こう定義しないと、Rubyが勝手にremember_tokenというローカル変数を作ってしまう。
     
 
-  # 渡されたトークンがダイジェストと一致したらtrueを返す
-  def authenticated?(remember_token)
+  def authenticated?(remember_token) #渡されたトークンがダイジェストと一致したらtrueを返す。
     return false if remember_digest.nil?
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
-  end
-     #このremembertokenはremember_tokenとは違って、ユーザ関数内の変数。
-    #もし大局的な変数remember_tokenを使用したいなら、selfを使用する。
+  end #このremembertokenはremember_tokenとは違って、ユーザ関数内の変数。
+      #もし大局的な変数remember_tokenを使用したいなら、selfを使用する。
   
 
-  # ユーザーログインを破棄する
-  def forget
+  def forget #ユーザログインを破壊する。
     update_attribute(:remember_digest, nil)
   end
+
+  def downcase_email  #このファイル内でbefore_saveにて使用。
+    self.email = self.email.downcase
+  end
+
+  def create_activation_digest #有効化用のトークン作成し、それのダイジェストも作成する。
+    self.activation_token = User.new_token
+    self.activation_digest = User.digest(activation_token)
+  end
+
 end
