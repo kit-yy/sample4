@@ -10,8 +10,7 @@ class SessionsController < ApplicationController
       remember user 
       #uer.rbで定義したrememberメソッド
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-      
-      redirect_to user
+      redirect_back_or user
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new'

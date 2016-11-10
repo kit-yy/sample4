@@ -1,0 +1,15 @@
+<% provide(:title, 'All users') %>
+<%#このtitleをlayouts/application.html.erbに渡す。%>
+
+<h1>All users</h1>
+
+<%= will_paginate %>
+
+<ul class="users">
+  <% @users.each do |user| %>
+<%#ユーザを一人一人表示する%>
+    <%= render @users %>
+  <% end %>
+</ul>
+
+<%= will_paginate %>
