@@ -77,10 +77,16 @@ class User < ActiveRecord::Base
 
   # パスワード再設定のメールを送信する
   def send_password_reset_email
-    serMailer.password_reset(self).deliver_now
+    UserMailer.password_reset(self).deliver_now
     # パスワード再設定用メールを送信するコード
     # このコード(password_reset()メソッド)が機能するためには、user_mailer.rb を編集する必要がある。
   end
+
+  #　パスワード再設定の有効期限に関するユーザ関数的なメソッド 
+   def password_reset_expired?
+    reset_sent_at < 2.hours.ago
+  end
+
 
 private
 
