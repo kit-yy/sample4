@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
   before_save :downcase_email
   #ActiveRecordのコールバックメソッド(ある特定の時点で呼び出されるメソッド)の一つ。
   #このコールバックメソッドは、全ての作業の最初に呼び出されるもの。
@@ -68,7 +68,19 @@ class User < ActiveRecord::Base
     # このメソッドのチェーンで有効化メールを送信してくれる。
   end
 
+  # パスワード再設定の属性を設定する
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_attribute(:reset_digest,  User.digest(reset_token))
+    update_attribute(:reset_sent_at, Time.zone.now)
+  end
 
+  # パスワード再設定のメールを送信する
+  def send_password_reset_email
+    serMailer.password_reset(self).deliver_now
+    # パスワード再設定用メールを送信するコード
+    # このコード(password_reset()メソッド)が機能するためには、user_mailer.rb を編集する必要がある。
+  end
 
 private
 
